@@ -42,15 +42,20 @@ public class CasualCriticCLI {
     }
   }
 
+  // TODO refine usage sections
   static void usage() {
     System.out.println("collection create -file <>");
     System.out.println("collection read -file <>");
     System.out.println("collection update -file <> -new <>");
     System.out.println("collection delete -file <>");
     System.out.println("group create -file <> -name <>");
-    System.out.println("group read -file <> [-name <>]");
+    System.out.println("group read -file <> [-name <>] [-id]");
     System.out.println("group update -file <> -name <> -new <>");
     System.out.println("group delete -file <> -name <>");
+    System.out.println("critique create -file <> -group <> -title <> [-adequacy <>] [-rating <>] [-body <>]");
+    System.out.println("critique read [-id <>] [-title <>]");
+    System.out.println("critique update");
+    System.out.println("critique delete -id <>");
   }
 
   static EngineIntake interpretArgs(String[] args){

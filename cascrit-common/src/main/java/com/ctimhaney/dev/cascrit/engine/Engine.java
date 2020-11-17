@@ -2,9 +2,9 @@ package com.ctimhaney.dev.cascrit.engine;
 
 import java.util.ArrayList;
 
-import com.ctimhaney.dev.cascrit.model.CritiqueObject;
 import com.ctimhaney.dev.cascrit.model.CritiqueCollection;
 import com.ctimhaney.dev.cascrit.model.CritiqueGroup;
+import com.ctimhaney.dev.cascrit.model.CasualCritique;
 
 
 public abstract class Engine {
@@ -46,6 +46,26 @@ public abstract class Engine {
       if (cgroup != null) {
         return cgroup.toString();
       }
+    } else if (intake.getEntity().equals("critique") || intake.getEntity().equals("crit")) {
+      CasualCritique ccritique = null;
+      if (intake.getAction().equals("create") || intake.getAction().equals("cr")) {
+        ccritique = createCritique(intake);
+      } else if (intake.getAction().equals("read") || intake.getAction().equals("rd")) {
+        String returnme = "";
+        for (CasualCritique c: readCritique(intake)) {
+          if (c != null) {
+            returnme += c.toString() + "\n";
+          }
+        }
+        return returnme;
+      } else if (intake.getAction().equals("update") || intake.getAction().equals("up")) {
+        ccritique = updateCritique(intake);
+      } else if (intake.getAction().equals("delete") || intake.getAction().equals("dl")) {
+        ccritique = deleteCritique(intake);
+      }
+      if (ccritique != null) {
+        return ccritique.toString();
+      }
     }
     return null;
   }
@@ -61,4 +81,10 @@ public abstract class Engine {
   public abstract ArrayList<CritiqueGroup> readGroup(EngineIntake intake);
   public abstract CritiqueGroup updateGroup(EngineIntake intake);
   public abstract CritiqueGroup deleteGroup(EngineIntake intake);
+
+  // Critique helper methods
+  public abstract CasualCritique createCritique(EngineIntake intake);
+  public abstract ArrayList<CasualCritique> readCritique(EngineIntake intake);
+  public abstract CasualCritique updateCritique(EngineIntake intake);
+  public abstract CasualCritique deleteCritique(EngineIntake intake);
 }

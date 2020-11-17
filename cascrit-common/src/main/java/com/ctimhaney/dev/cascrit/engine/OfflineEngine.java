@@ -8,9 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.jsontype.DefaultBaseTypeLimitingValidator;
 
-import com.ctimhaney.dev.cascrit.model.CritiqueObject;
 import com.ctimhaney.dev.cascrit.model.CritiqueCollection;
 import com.ctimhaney.dev.cascrit.model.CritiqueGroup;
+import com.ctimhaney.dev.cascrit.model.CasualCritique;
 
 public class OfflineEngine extends Engine{
   private ObjectMapper mapper;
@@ -78,9 +78,14 @@ public class OfflineEngine extends Engine{
     if (validateIntakeProperties(intake, "file")) {
       CritiqueCollection thisCollection = readCollectionfromFile(intake.getProperty("file"));
       if (thisCollection != null) {
+        ArrayList<CritiqueGroup> oneList = new ArrayList<CritiqueGroup>();
         if (intake.getProperty("name") != null) {
-          ArrayList<CritiqueGroup> oneList = new ArrayList<CritiqueGroup>();
           oneList.add(thisCollection.getCritiqueGroup(intake.getProperty("name")));
+          return oneList;
+        } else if (intake.getProperty("id") != null) {
+          try {
+            oneList.add(thisCollection.getCritiqueGroup(Integer.parseInt(intake.getProperty("id"))));
+          } catch (NumberFormatException e) {}
           return oneList;
         } else {
           return thisCollection.getCritiqueGroups();
@@ -113,6 +118,75 @@ public class OfflineEngine extends Engine{
           writeCollectionToFile(thisCollection, intake.getProperty("file"), true);
           return forsakenGroup;
         }
+      }
+    }
+    return null;
+  }
+
+  public CasualCritique createCritique(EngineIntake intake) {
+    // TODO allow group ID?
+    if (validateIntakeProperties(intake, "file", "group", "title")) {
+      CritiqueCollection thisCollection = readCollectionfromFile(intake.getProperty("file"));
+      CritiqueGroup thisGroup = thisCollection.getCritiqueGroup(intake.getProperty("group"));
+      if (thisCollection != null && thisGroup != null) {
+        boolean adequacy = false;
+        if (intake.getProperty("adequacy") != null && (intake.getProperty("adequacy").equals("true") || intake.getProperty("adequacy").equals("yes"))) {
+          adequacy = true;
+        }
+        int rating = 0;
+        if (intake.getProperty("rating") != null) {
+          try {
+            rating = Integer.parseInt(intake.getProperty("rating"));
+          } catch (NumberFormatException e) {}
+        }
+        CasualCritique newCritique = thisCollection.addCasualCritique(thisGroup.getObjectId(), intake.getProperty("title"), adequacy, rating, intake.getProperty("body"));
+        if (newCritique != null) {
+          writeCollectionToFile(thisCollection, intake.getProperty("file"), true);
+        }
+        return newCritique;
+      }
+    }
+    return null;
+  }
+
+  public ArrayList<CasualCritique> readCritique(EngineIntake intake) {
+    if (validateIntakeProperties(intake, "file")) {
+      CritiqueCollection thisCollection = readCollectionfromFile(intake.getProperty("file"));
+      if (thisCollection != null) {
+        ArrayList<CasualCritique> oneList = new ArrayList<CasualCritique>();
+        if (intake.getProperty("title") != null) {
+          oneList.add(thisCollection.getCasualCritique(intake.getProperty("title")));
+          return oneList;
+        } else if (intake.getProperty("id") != null) {
+          try {
+            oneList.add(thisCollection.getCasualCritique(Integer.parseInt(intake.getProperty("id"))));
+          } catch (NumberFormatException e) {}
+          return oneList;
+        } else {
+          return thisCollection.getCasualCritiques();
+        }
+      }
+    }
+    return null;
+  }
+
+  public CasualCritique updateCritique(EngineIntake intake) {return null;}
+  public CasualCritique deleteCritique(EngineIntake intake) {
+    if (validateIntakeProperties(intake, "file")) {
+      CritiqueCollection thisCollection = readCollectionfromFile(intake.getProperty("file"));
+      if (thisCollection != null) {
+        CasualCritique forsakenCritique = null;
+        if (intake.getProperty("title") != null) {
+          forsakenCritique = thisCollection.deleteCasualCritique(intake.getProperty("title"));
+        } else if (intake.getProperty("id") != null) {
+          try {
+            forsakenCritique = thisCollection.deleteCasualCritique(Integer.parseInt(intake.getProperty("id")));
+          } catch (NumberFormatException e) {}
+        }
+        if (forsakenCritique != null) {
+          writeCollectionToFile(thisCollection, intake.getProperty("file"), true);
+        }
+        return forsakenCritique;
       }
     }
     return null;
