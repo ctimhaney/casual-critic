@@ -97,7 +97,7 @@ public class CritiqueCollection {
     return o;
   }
 
-  public CasualCritique addCasualCritique(int groupId, String title, boolean adequacy, int rating, String body) {
+  public CasualCritique addCasualCritique(int groupId, String title, Adequacy adequacy, double rating, String body) {
     CritiqueGroup o = getCritiqueGroup(groupId);
     CasualCritique newCritique = null;
     if (o != null && getCasualCritique(title) == null) {
@@ -105,6 +105,19 @@ public class CritiqueCollection {
         body = "";
       }
       newCritique = new CasualCritique(this.casualCritiques.size(), groupId, title, adequacy, rating, body);
+      this.casualCritiques.add(newCritique);
+    }
+    return newCritique;
+  }
+
+  public CasualCritique addCasualCritique(String groupName, String title, Adequacy adequacy, double rating, String body) {
+    CritiqueGroup o = getCritiqueGroup(groupName);
+    CasualCritique newCritique = null;
+    if (o != null && getCasualCritique(title) == null) {
+      if (body == null) {
+        body = "";
+      }
+      newCritique = new CasualCritique(this.casualCritiques.size(), o.getObjectId(), title, adequacy, rating, body);
       this.casualCritiques.add(newCritique);
     }
     return newCritique;
@@ -123,6 +136,51 @@ public class CritiqueCollection {
       if (o.getObjectId() == objectId) {
         return o;
       }
+    }
+    return null;
+  }
+
+  public CasualCritique updateCritique(String title, int groupId, String newTitle, Adequacy adequacy, double rating, String body) {
+    CasualCritique o = getCasualCritique(title);
+    if (o != null) {
+      if (groupId >= 0 && getCritiqueGroup(groupId) != null) {
+        o.setCritiqueGroupId(groupId);
+      }
+      if (newTitle != null) {
+        o.setCritiqueTitle(newTitle);
+      }
+      if (adequacy != Adequacy.NOACTION) {
+        o.setAdequacy(adequacy);
+      }
+      if (rating >= 0) {
+        o.setRating(rating);
+      }
+      if (body != null) {
+        o.setCritiqueBody(body);
+      }
+      return o;
+    }
+    return null;
+  }
+  public CasualCritique updateCritique(int objectId, int groupId, String newTitle, Adequacy adequacy, double rating, String body) {
+    CasualCritique o = getCasualCritique(objectId);
+    if (o != null) {
+      if (groupId >= 0 && getCritiqueGroup(groupId) != null) {
+        o.setCritiqueGroupId(groupId);
+      }
+      if (newTitle != null) {
+        o.setCritiqueTitle(newTitle);
+      }
+      if (adequacy != Adequacy.NOACTION) {
+        o.setAdequacy(adequacy);
+      }
+      if (rating >= 0) {
+        o.setRating(rating);
+      }
+      if (body != null) {
+        o.setCritiqueBody(body);
+      }
+      return o;
     }
     return null;
   }

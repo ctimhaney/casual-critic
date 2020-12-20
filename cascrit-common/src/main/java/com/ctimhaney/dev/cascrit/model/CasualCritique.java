@@ -2,9 +2,9 @@ package com.ctimhaney.dev.cascrit.model;
 
 public class CasualCritique extends CritiqueObject{
   private int critiqueGroupId;
-  private String critiqueTitle; // our "key" for now
-  private boolean adequacy;
-  private int rating;
+  private String critiqueTitle;
+  private Adequacy adequacy;
+  private double rating;
   private String critiqueBody;
 
   public CasualCritique() {
@@ -17,7 +17,7 @@ public class CasualCritique extends CritiqueObject{
     this.critiqueTitle = critiqueTitle;
   }
 
-  public CasualCritique(int objectId, int critiqueGroupId, String critiqueTitle, boolean adequacy, int rating, String critiqueBody) {
+  public CasualCritique(int objectId, int critiqueGroupId, String critiqueTitle, Adequacy adequacy, double rating, String critiqueBody) {
     super(objectId);
     this.critiqueGroupId = critiqueGroupId;
     this.critiqueTitle = critiqueTitle;
@@ -27,16 +27,16 @@ public class CasualCritique extends CritiqueObject{
   }
 
   public int getCritiqueGroupId() { return this.critiqueGroupId; }
-  public void setCritiqueGroup(int critiqueGroupId) { this.critiqueGroupId = critiqueGroupId; }
+  public void setCritiqueGroupId(int critiqueGroupId) { this.critiqueGroupId = critiqueGroupId; }
 
   public String getCritiqueTitle() { return this.critiqueTitle; }
   public void setCritiqueTitle(String critiqueTitle) { this.critiqueTitle = critiqueTitle; }
 
-  public boolean getAdequacy() { return this.adequacy; }
-  public void setAdequacy(boolean adequacy) { this.adequacy = adequacy; }
+  public Adequacy getAdequacy() { return this.adequacy; }
+  public void setAdequacy(Adequacy adequacy) { this.adequacy = adequacy; }
 
-  public int getRating() { return this.rating; }
-  public void setRating(int rating) { this.rating = rating; }
+  public double getRating() { return this.rating; }
+  public void setRating(double rating) { this.rating = rating; }
 
   public String getCritiqueBody() { return this.critiqueBody; }
   public void setCritiqueBody(String critiqueBody) { this.critiqueBody = critiqueBody; }

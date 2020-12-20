@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.jsontype.DefaultBaseTypeLimitingValidator;
 import com.ctimhaney.dev.cascrit.model.CritiqueCollection;
 import com.ctimhaney.dev.cascrit.model.CritiqueGroup;
 import com.ctimhaney.dev.cascrit.model.CasualCritique;
+import com.ctimhaney.dev.cascrit.model.Adequacy;
 
 public class OfflineEngine extends Engine{
   private ObjectMapper mapper;
@@ -124,22 +125,27 @@ public class OfflineEngine extends Engine{
   }
 
   public CasualCritique createCritique(EngineIntake intake) {
-    // TODO allow group ID?
+    // TODO allow group ID? (group,groupid) or just default to all ids. The multifunctional approach is a drag
     if (validateIntakeProperties(intake, "file", "group", "title")) {
       CritiqueCollection thisCollection = readCollectionfromFile(intake.getProperty("file"));
-      CritiqueGroup thisGroup = thisCollection.getCritiqueGroup(intake.getProperty("group"));
-      if (thisCollection != null && thisGroup != null) {
-        boolean adequacy = false;
-        if (intake.getProperty("adequacy") != null && (intake.getProperty("adequacy").equals("true") || intake.getProperty("adequacy").equals("yes"))) {
-          adequacy = true;
+      if (thisCollection != null) {
+        Adequacy adequacy = Adequacy.UNDECIDED;
+        if (intake.getProperty("adequacy") != null) {
+          if (intake.getProperty("adequacy").equals("true") || intake.getProperty("adequacy").equals("yes")) {
+            adequacy = Adequacy.ADEQUATE;
+          } else if (intake.getProperty("adequacy").equals("false") || intake.getProperty("adequacy").equals("no")) {
+            adequacy = Adequacy.INADEQUATE;
+          } else if (intake.getProperty("adequacy").equals("undecided") || intake.getProperty("adequacy").equals("none")) {
+            adequacy = Adequacy.UNDECIDED;
+          }
         }
-        int rating = 0;
+        double rating = 0;
         if (intake.getProperty("rating") != null) {
           try {
-            rating = Integer.parseInt(intake.getProperty("rating"));
+            rating = Double.parseDouble(intake.getProperty("rating"));
           } catch (NumberFormatException e) {}
         }
-        CasualCritique newCritique = thisCollection.addCasualCritique(thisGroup.getObjectId(), intake.getProperty("title"), adequacy, rating, intake.getProperty("body"));
+        CasualCritique newCritique = thisCollection.addCasualCritique(intake.getProperty("group"), intake.getProperty("title"), adequacy, rating, intake.getProperty("body"));
         if (newCritique != null) {
           writeCollectionToFile(thisCollection, intake.getProperty("file"), true);
         }
@@ -170,7 +176,51 @@ public class OfflineEngine extends Engine{
     return null;
   }
 
-  public CasualCritique updateCritique(EngineIntake intake) {return null;}
+  public CasualCritique updateCritique(EngineIntake intake) {
+    if (validateIntakeProperties(intake, "file")) {
+      CritiqueCollection thisCollection = readCollectionfromFile(intake.getProperty("file"));
+      if (thisCollection != null) {
+        // defaults for values we need to parse
+        int newGroupID = -1;
+        Adequacy newAdequacy = Adequacy.NOACTION;
+        double newRating = -1;
+
+        // input validation here
+        if (intake.getProperty("groupid") != null) {
+          try {
+            newGroupID = Integer.parseInt(intake.getProperty("groupid"));
+          } catch (NumberFormatException e) {}
+        }
+        if (intake.getProperty("adequacy") != null) {
+          if (intake.getProperty("adequacy").equals("true") || intake.getProperty("adequacy").equals("yes")) {
+            newAdequacy = Adequacy.ADEQUATE;
+          } else if (intake.getProperty("adequacy").equals("false") || intake.getProperty("adequacy").equals("no")) {
+            newAdequacy = Adequacy.INADEQUATE;
+          } else if (intake.getProperty("adequacy").equals("undecided") || intake.getProperty("adequacy").equals("none")) {
+            newAdequacy = Adequacy.UNDECIDED;
+          }
+        }
+        if (intake.getProperty("rating") != null) {
+          try {
+            newRating = Double.parseDouble(intake.getProperty("rating"));
+          } catch (NumberFormatException e) {}
+        }
+
+        CasualCritique thisCritique = null;
+        if (intake.getProperty("title") != null) {
+          thisCritique = thisCollection.updateCritique(intake.getProperty("title"), newGroupID, intake.getProperty("new"), newAdequacy, newRating, intake.getProperty("body"));
+        } else if (intake.getProperty("id") != null) {
+          thisCritique = thisCollection.updateCritique(Integer.parseInt(intake.getProperty("id")), newGroupID, intake.getProperty("new"), newAdequacy, newRating, intake.getProperty("body"));
+        }
+
+        if (thisCritique != null) {
+          writeCollectionToFile(thisCollection, intake.getProperty("file"), true);
+        }
+        return thisCritique;
+      }
+    }
+    return null;
+  }
   public CasualCritique deleteCritique(EngineIntake intake) {
     if (validateIntakeProperties(intake, "file")) {
       CritiqueCollection thisCollection = readCollectionfromFile(intake.getProperty("file"));
