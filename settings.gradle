@@ -10,5 +10,6 @@
 rootProject.name = 'CasualCritic'
 include (
   'cascrit-common',
-  'cascrit-cli'
+  'cascrit-cli',
+  'cascrit-api'
 )
