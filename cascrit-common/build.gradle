@@ -6,6 +6,8 @@ sourceCompatibility = 21
 targetCompatibility = 21
 
 dependencies {
-  api 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
-  api 'org.json:json:20200518'
+  api 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+  api 'com.fasterxml.jackson.core:jackson-core:2.17.2'
+  api 'com.fasterxml.jackson.core:jackson-annotations:2.17.2'
+  api 'org.json:json:20240303'
 }
