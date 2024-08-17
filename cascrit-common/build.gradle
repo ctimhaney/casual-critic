@@ -2,8 +2,8 @@ plugins {
     id 'java-library'
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 21
+targetCompatibility = 21
 
 dependencies {
   api 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
