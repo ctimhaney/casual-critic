@@ -7,7 +7,7 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.jsontype.DefaultBaseTypeLimitingValidator;
-
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.ctimhaney.dev.cascrit.model.CritiqueCollection;
 import com.ctimhaney.dev.cascrit.model.CritiqueGroup;
 import com.ctimhaney.dev.cascrit.model.CasualCritique;
@@ -17,6 +17,7 @@ public class OfflineEngine extends Engine{
   private ObjectMapper mapper;
   public OfflineEngine() {
     mapper = new ObjectMapper();
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
     // mapper.activateDefaultTyping(new DefaultBaseTypeLimitingValidator());
   }
   // helper methods
